@@ -9,9 +9,9 @@ const errorHandler = require("./middleware/errorHandler")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
 const corsOptions = require("./config/corsOptions")
-const connectDB = require("./config/dbConn")
+// const connectDB = require("./config/dbConn")
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3500
 
 console.log(process.env.NODE_ENV)
 
@@ -29,7 +29,10 @@ app.use("/users", require("./routes/userRoutes"))
 app.use("/notes", require("./routes/noteRoutes"))
 app.use("/auth", require("./routes/authRoutes"))
 
-connectDB()
+// connectDB()
+mongoose.connect(process.env.DATABASE_URI, {
+  connectTimeoutMS: 60000,
+})
 
 app.all("*", (req, res) => {
   res.status(404)
@@ -44,10 +47,10 @@ app.all("*", (req, res) => {
 
 app.use(errorHandler)
 
-mongoose.connection.once("open", () => {
-  console.log("Connected to MongoDB")
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-})
+// mongoose.connection.once("open", () => {
+//   console.log("Connected to MongoDB")
+//   app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+// })
 
 mongoose.connection.on("error", (err) => {
   console.log(err)
